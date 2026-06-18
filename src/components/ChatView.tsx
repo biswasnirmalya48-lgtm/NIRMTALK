@@ -569,71 +569,7 @@ export function ChatView({ chat, profiles, onBack }: { chat?: Chat, profiles: Re
             <button onClick={() => setShowGroupInfo(!showGroupInfo)} className={`flex w-9 h-9 md:w-10 md:h-10 flex-shrink-0 items-center justify-center rounded-full transition-colors ${showGroupInfo ? 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'text-blue-500 hover:bg-slate-100 dark:hover:bg-white/10'}`}>
                 <Info className="w-4 h-4 md:w-5 md:h-5" />
             </button>
-            <div className="relative">
-              <button onClick={() => setShowChatMenu(!showChatMenu)} className={`w-9 h-9 md:w-10 md:h-10 flex flex-shrink-0 items-center justify-center rounded-full transition-colors ${showChatMenu ? 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10'}`}>
-                  <MoreHorizontal className="w-4 h-4 md:w-5 md:h-5" />
-              </button>
-              <AnimatePresence>
-                {showChatMenu && (
-                  <>
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowChatMenu(false)} className="fixed inset-0 z-40" />
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.95, y: -10 }} 
-                      animate={{ opacity: 1, scale: 1, y: 0 }} 
-                      exit={{ opacity: 0, scale: 0.95, y: -10 }} 
-                      className="absolute right-0 top-[110%] w-48 bg-white dark:bg-[#1c1c1e] rounded-xl shadow-xl border border-slate-200 dark:border-white/10 overflow-hidden z-50 py-1"
-                    >
-                      <button 
-                        onClick={() => {
-                          if (confirm('Are you sure you want to clear the chat history? This will delete all messages for all participants and cannot be undone.')) {
-                            clearChatHistory(chat.id);
-                            setShowChatMenu(false);
-                          }
-                        }} 
-                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Clear Chat History
-                      </button>
-                      <button 
-                        onClick={() => {
-                          if (confirm('Are you sure you want to delete this chat? This cannot be undone.')) {
-                            deleteChat(chat.id);
-                            setShowChatMenu(false);
-                            if (onBack) onBack();
-                          }
-                        }} 
-                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2 border-t border-slate-100 dark:border-white/5"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Delete Chat
-                      </button>
-                      {chat.type === 'direct' && (
-                        <button 
-                          onClick={() => {
-                            const otherId = chat.members.find((m: string) => m !== currentUser.uid);
-                            if (!otherId) return;
-                            const isBlocked = profiles[currentUser.uid]?.blockedUsers?.includes(otherId);
-                            if (isBlocked) {
-                                import('../hooks/useFirestore').then(m => m.unblockUser(otherId));
-                            } else {
-                                if (confirm('Are you sure you want to block this user?')) {
-                                  blockUser(otherId);
-                                  setShowChatMenu(false);
-                                }
-                            }
-                          }} 
-                          className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2 border-t border-slate-100 dark:border-white/5"
-                        >
-                          <User className="w-4 h-4" />
-                          {profiles[currentUser.uid]?.blockedUsers?.includes(chat.members.find((m: string) => m !== currentUser.uid) || '') ? 'Unblock User' : 'Block User'}
-                        </button>
-                      )}
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
-            </div>
+
          </div>
       </div>
       </div>
