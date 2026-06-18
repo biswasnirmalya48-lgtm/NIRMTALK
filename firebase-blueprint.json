@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Public user profile",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "description": "Email address" },
+        "photoURL": { "type": "string" },
+        "status": { "type": "string", "enum": ["online", "offline"] },
+        "lastSeen": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["userId", "displayName", "email"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "A conversation between users",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["direct", "group"] },
+        "name": { "type": "string", "description": "Group name, empty for direct" },
+        "members": { "type": "array", "description": "Array of user IDs", "items": { "type": "string" } },
+        "updatedAt": { "type": "string", "format": "timestamp" },
+        "lastMessage": { "type": "string" }
+      },
+      "required": ["type", "members", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A message within a chat",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["senderId", "text", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Chat metadata and membership"
+    },
+    "chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Messages within a chat"
+    }
+  }
+}

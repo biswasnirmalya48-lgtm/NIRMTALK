@@ -1,0 +1,9 @@
+{
+  "name": "Global Chat",
+  "description": "A minimal, fast global chat application like Telegram with real-time messages and online indicators.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

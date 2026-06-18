@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Users ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['userId', 'displayName', 'email', 'status'])
+        && data.userId is string && data.userId == request.auth.uid
+        && data.displayName is string && data.displayName.size() <= 100
+        && data.email is string && (data.email == "" || !("email" in request.auth.token) || data.email == request.auth.token.email)
+        && data.status is string && data.status.size() <= 20
+        && (data.get('photoURL', '') is string && data.get('photoURL', '').size() <= 500000)
+        && (data.get('username', '') is string && data.get('username', '').size() <= 30)
+        && (data.get('bio', '') is string && data.get('bio', '').size() <= 200)
+        && (data.get('phoneNumber', '') is string && data.get('phoneNumber', '').size() <= 20)
+        && (data.get('blockedUsers', []) is list)
+        && (data.get('settings', {}) is map)
+        && (data.get('lastSeen', request.time) is timestamp);
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(userId) && userId == request.auth.uid && isValidUser(incoming());
+      allow update: if isSignedIn() && userId == request.auth.uid 
+        && isValidUser(incoming()) 
+        && incoming().userId == existing().userId 
+        && incoming().email == existing().email;
+    }
+
+    // --- Chats ---
+    function isValidChat(data) {
+      return data.keys().hasAll(['type', 'members', 'updatedAt'])
+        && data.type is string && data.type in ['direct', 'group']
+        && data.members is list && data.members.size() >= 1;
+    }
+
+    match /chats/{chatId} {
+      allow read: if isSignedIn() && request.auth.uid in resource.data.members;
+      
+      allow create: if isSignedIn() && isValidId(chatId) 
+        && isValidChat(incoming()) 
+        && request.auth.uid in incoming().members;
+
+      allow update: if isSignedIn() && request.auth.uid in existing().members
+        && isValidChat(incoming());
+
+      allow delete: if isSignedIn() && request.auth.uid in existing().members;
+    }
+
+    // --- Calls ---
+    match /calls/{callId} {
+      allow read: if isSignedIn() && (
+        request.auth.uid == resource.data.callerId || 
+        request.auth.uid == resource.data.calleeId || 
+        (resource.data.get('isGroup', false) == true && (
+          ('members' in resource.data && request.auth.uid in resource.data.members) ||
+          isChatMember(resource.data.chatId)
+        ))
+      );
+      allow create: if isSignedIn() && (
+        request.auth.uid == incoming().callerId &&
+        (!incoming().get('isGroup', false) || ('members' in incoming() && request.auth.uid in incoming().members) || isChatMember(incoming().chatId))
+      );
+      allow update: if isSignedIn() && (
+        request.auth.uid == resource.data.callerId || 
+        request.auth.uid == resource.data.calleeId || 
+        (resource.data.get('isGroup', false) == true && (
+          ('members' in resource.data && request.auth.uid in resource.data.members) ||
+          isChatMember(resource.data.chatId)
+        ))
+      );
+      
+      match /callerCandidates/{candidateId} {
+        allow read, create: if isSignedIn();
+      }
+      
+      match /calleeCandidates/{candidateId} {
+        allow read, create: if isSignedIn();
+      }
+
+      match /connections/{connId} {
+        allow read, write: if isSignedIn();
+        
+        match /callerCandidates/{candidateId} {
+          allow read, write: if isSignedIn();
+        }
+        match /calleeCandidates/{candidateId} {
+          allow read, write: if isSignedIn();
+        }
+      }
+    }
+    
+    // --- Messages ---
+    function isValidMessage(data) {
+      return data.keys().hasAll(['senderId', 'text', 'createdAt'])
+        && data.senderId is string && data.senderId == request.auth.uid
+        && data.text is string && data.text.size() <= 4000
+        && data.createdAt is timestamp
+        && (data.get('editedAt', data.createdAt) is timestamp)
+        && (data.get('replyTo', null) == null || (data.replyTo is map && data.replyTo.keys().hasAll(['id', 'text', 'senderName'])))
+        && (data.get('reactions', {}) is map)
+        && (data.get('isForwarded', false) is bool)
+        && (data.get('attachment', null) == null || data.get('attachment', null) is map);
+    }
+
+    function isChatMember(chatId) {
+      let chat = get(/databases/$(database)/documents/chats/$(chatId));
+      return chat != null && request.auth.uid in chat.data.members;
+    }
+
+    match /chats/{chatId}/messages/{messageId} {
+      allow read: if isSignedIn() && isChatMember(chatId);
+      
+      allow create: if isSignedIn() && isValidId(chatId) && isValidId(messageId)
+        && isChatMember(chatId)
+        && isValidMessage(incoming())
+        && incoming().createdAt == request.time;
+        
+      allow update: if isSignedIn() && isChatMember(chatId) 
+        && (
+           (existing().senderId == request.auth.uid) || (incoming().diff(existing()).affectedKeys().hasOnly(['reactions']))
+        );
+        
+      allow delete: if isSignedIn() && existing().senderId == request.auth.uid && isChatMember(chatId);
+    }
+  }
+}
