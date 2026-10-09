@@ -38,6 +38,7 @@ export interface UserProfile {
   status: 'online' | 'offline';
   lastSeen: any; // Timestamp
   bio?: string;
+  isBot?: boolean;
   phoneNumber?: string;
   blockedUsers?: string[];
   settings?: {
@@ -118,6 +119,16 @@ export interface Message {
     contactName?: string;
     contactPhone?: string;
     pollQuestion?: string;
-    pollOptions?: { text: string; votes: string[] }[]; // array of voter IDs
+    pollOptions?: { text: string; imageUrl?: string | null; votes: string[] }[]; // array of voter IDs
+    isAnonymous?: boolean;
+    localBlobUrl?: string;
+    uploadProgress?: number;
+    uploadStatus?: 'uploading' | 'completed' | 'failed';
+    isViewOnce?: boolean;
+    viewOnceSenderId?: string;
+    viewOnceRecipientId?: string;
+    viewOnceMediaId?: string;
+    viewOnceStatus?: 'sent' | 'viewed';
+    viewOnceViewedAt?: any;
   };
 }

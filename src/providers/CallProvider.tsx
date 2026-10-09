@@ -74,48 +74,116 @@ export const CallProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch(e) {}
   };
 
+  useEffect(() => {
+    const unlock = () => {
+      initAudioCtx();
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('touchstart', unlock);
+    };
+    window.addEventListener('click', unlock);
+    window.addEventListener('touchstart', unlock);
+    return () => {
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('touchstart', unlock);
+    };
+  }, []);
+
   const playSynthesizedTone = (type: 'ring' | 'dial') => {
     initAudioCtx();
     stopSynthesizedTone();
     
     if (!audioCtxRef.current) return;
     
+    const createSingleRing = (startTime: number) => {
+      if (!audioCtxRef.current) return;
+      try {
+        const ctx = audioCtxRef.current;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        
+        // Sawtooth has rich harmonics to make it sound sharp, loud and penetrative
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(450, startTime);
+        
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(400, startTime);
+        
+        // Distinct rapid electromechanical "bell ring" flutter (vibrato effect)
+        lfo.frequency.setValueAtTime(25, startTime); // 25 Hz flutter rate
+        lfoGain.gain.setValueAtTime(35, startTime); // 35 Hz pitch modulation strength
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc1.frequency);
+        lfoGain.connect(osc2.frequency);
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1400, startTime); // full harmonic range
+        
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(filter);
+        filter.connect(ctx.destination);
+        
+        // Tremolo cadence: fade in quickly, stay extremely loud, fade out
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.95, startTime + 0.04); // Super loud & clear!
+        gainNode.gain.setValueAtTime(0.95, startTime + 0.46);
+        gainNode.gain.linearRampToValueAtTime(0, startTime + 0.5);
+        
+        lfo.start(startTime);
+        osc1.start(startTime);
+        osc2.start(startTime);
+        
+        lfo.stop(startTime + 0.5);
+        osc1.stop(startTime + 0.5);
+        osc2.stop(startTime + 0.5);
+      } catch (e) {
+        console.error("Single ring synthesis error:", e);
+      }
+    };
+
     const playBeep = () => {
       try {
-        const osc = audioCtxRef.current!.createOscillator();
-        const gainNode = audioCtxRef.current!.createGain();
-        
-        osc.connect(gainNode);
-        gainNode.connect(audioCtxRef.current!.destination);
+        if (!audioCtxRef.current) return;
+        const now = audioCtxRef.current.currentTime;
         
         if (type === 'ring') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(440, audioCtxRef.current!.currentTime);
-          
-          gainNode.gain.setValueAtTime(0, audioCtxRef.current!.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0.5, audioCtxRef.current!.currentTime + 0.1);
-          gainNode.gain.setValueAtTime(0.5, audioCtxRef.current!.currentTime + 1.8);
-          gainNode.gain.linearRampToValueAtTime(0, audioCtxRef.current!.currentTime + 2);
-          
-          osc.start(audioCtxRef.current!.currentTime);
-          osc.stop(audioCtxRef.current!.currentTime + 2);
+          // Classic double-ring phone cadence
+          // Ring 1
+          createSingleRing(now);
+          // Ring 2 (starts after 0.65 seconds)
+          createSingleRing(now + 0.65);
         } else {
+          // Soft Dialtone (ringback signal)
+          const osc = audioCtxRef.current.createOscillator();
+          const gainNode = audioCtxRef.current.createGain();
+          
+          osc.connect(gainNode);
+          gainNode.connect(audioCtxRef.current.destination);
+          
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(425, audioCtxRef.current!.currentTime);
+          osc.frequency.setValueAtTime(425, now);
           
-          gainNode.gain.setValueAtTime(0, audioCtxRef.current!.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0.1, audioCtxRef.current!.currentTime + 0.1);
-          gainNode.gain.setValueAtTime(0.1, audioCtxRef.current!.currentTime + 0.9);
-          gainNode.gain.linearRampToValueAtTime(0, audioCtxRef.current!.currentTime + 1);
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(0.12, now + 0.1);
+          gainNode.gain.setValueAtTime(0.12, now + 1.1);
+          gainNode.gain.linearRampToValueAtTime(0, now + 1.25);
           
-          osc.start(audioCtxRef.current!.currentTime);
-          osc.stop(audioCtxRef.current!.currentTime + 1);
+          osc.start(now);
+          osc.stop(now + 1.25);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error("Ringtone/Dialtone tick error:", e);
+      }
     };
 
     playBeep();
-    toneIntervalRef.current = setInterval(playBeep, type === 'ring' ? 4000 : 4000);
+    // Looping sequence: loop every 3 seconds for standard telephone ringing cadence
+    toneIntervalRef.current = setInterval(playBeep, type === 'ring' ? 3000 : 4000);
   };
 
   const stopSynthesizedTone = () => {

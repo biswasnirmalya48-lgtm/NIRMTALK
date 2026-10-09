@@ -133,7 +133,7 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
       </div>
 
       {/* Profile Summary Card */}
-      <div className="flex items-center gap-4 bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-sm p-4 rounded-2xl mb-6">
+      <div className="flex items-center gap-4 glass-protective-panel p-4 rounded-2xl mb-6">
         <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
            {editPhoto ? (
              <img src={editPhoto} alt="Me" className="w-16 h-16 rounded-full object-cover" />
@@ -154,19 +154,19 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
       </div>
 
       <div className="space-y-1">
-        <button onClick={() => setActiveTab('account')} className="w-full flex items-center gap-4 p-3 hover:bg-white/40 dark:hover:bg-white/5 rounded-xl transition-colors">
+        <button onClick={() => setActiveTab('account')} className="w-full flex items-center gap-4 p-3 hover:bg-slate-100/90 dark:hover:bg-white/5 rounded-xl transition-colors">
           <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300"><UserCircle className="w-5 h-5" /></div>
           <div className="flex-1 text-left"><div className="font-medium text-slate-900 dark:text-white">Account</div><div className="text-[13px] text-slate-500">Profile, username, bio</div></div>
         </button>
-        <button onClick={() => setActiveTab('appearance')} className="w-full flex items-center gap-4 p-3 hover:bg-white/40 dark:hover:bg-white/5 rounded-xl transition-colors">
+        <button onClick={() => setActiveTab('appearance')} className="w-full flex items-center gap-4 p-3 hover:bg-slate-100/90 dark:hover:bg-white/5 rounded-xl transition-colors">
           <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300"><Palette className="w-5 h-5" /></div>
           <div className="flex-1 text-left"><div className="font-medium text-slate-900 dark:text-white">Appearance</div><div className="text-[13px] text-slate-500">Theme, colors, font size</div></div>
         </button>
-        <button onClick={() => setActiveTab('privacy')} className="w-full flex items-center gap-4 p-3 hover:bg-white/40 dark:hover:bg-white/5 rounded-xl transition-colors">
+        <button onClick={() => setActiveTab('privacy')} className="w-full flex items-center gap-4 p-3 hover:bg-slate-100/90 dark:hover:bg-white/5 rounded-xl transition-colors">
           <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300"><Lock className="w-5 h-5" /></div>
           <div className="flex-1 text-left"><div className="font-medium text-slate-900 dark:text-white">Privacy and Safety</div><div className="text-[13px] text-slate-500">Last seen, blocked users</div></div>
         </button>
-        <button onClick={() => setActiveTab('preferences')} className="w-full flex items-center gap-4 p-3 hover:bg-white/40 dark:hover:bg-white/5 rounded-xl transition-colors">
+        <button onClick={() => setActiveTab('preferences')} className="w-full flex items-center gap-4 p-3 hover:bg-slate-100/90 dark:hover:bg-white/5 rounded-xl transition-colors">
           <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300"><Settings className="w-5 h-5" /></div>
           <div className="flex-1 text-left"><div className="font-medium text-slate-900 dark:text-white">Preferences</div><div className="text-[13px] text-slate-500">Language, haptics, media</div></div>
         </button>
@@ -187,22 +187,22 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
       <div className="space-y-4">
         <div>
           <label className="text-[13px] font-semibold text-slate-500 ml-1">Name</label>
-          <input type="text" value={editName} onChange={e=>setEditName(e.target.value)} className="w-full mt-1 bg-white/50 dark:bg-white/5 backdrop-blur-md px-4 py-3 rounded-xl border border-transparent dark:border-white/10 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white" />
+          <input type="text" value={editName} onChange={e=>setEditName(e.target.value)} className="w-full mt-1 bg-slate-100/90 dark:bg-white/5 backdrop-blur-md px-4 py-3 rounded-xl border border-slate-200 dark:border-transparent outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all shadow-inner" />
         </div>
         <div>
           <label className="text-[13px] font-semibold text-slate-500 ml-1">Username</label>
           <div className="relative mt-1">
             <span className="absolute left-4 top-3 text-slate-400">@</span>
-            <input type="text" value={editUsername} onChange={e=>setEditUsername(e.target.value)} className="w-full bg-white/50 dark:bg-white/5 backdrop-blur-md pl-8 pr-4 py-3 rounded-xl border border-transparent dark:border-white/10 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white" />
+            <input type="text" value={editUsername} onChange={e=>setEditUsername(e.target.value)} className="w-full bg-slate-100/90 dark:bg-white/5 backdrop-blur-md pl-8 pr-4 py-3 rounded-xl border border-slate-200 dark:border-transparent outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all shadow-inner" />
           </div>
         </div>
         <div>
           <label className="text-[13px] font-semibold text-slate-500 ml-1">Bio</label>
-          <textarea value={editBio} onChange={e=>setEditBio(e.target.value)} rows={3} className="w-full mt-1 bg-white/50 dark:bg-white/5 backdrop-blur-md px-4 py-3 rounded-xl border border-transparent dark:border-white/10 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none text-slate-900 dark:text-white" placeholder="A few words about you..." />
+          <textarea value={editBio} onChange={e=>setEditBio(e.target.value)} rows={3} className="w-full mt-1 bg-slate-100/90 dark:bg-white/5 backdrop-blur-md px-4 py-3 rounded-xl border border-slate-200 dark:border-transparent outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none text-slate-900 dark:text-white transition-all shadow-inner" placeholder="A few words about you..." />
         </div>
         <div>
           <label className="text-[13px] font-semibold text-slate-500 ml-1">Phone Number</label>
-          <input type="tel" value={editPhone} onChange={e=>setEditPhone(e.target.value)} className="w-full mt-1 bg-white/50 dark:bg-white/5 backdrop-blur-md px-4 py-3 rounded-xl border border-transparent dark:border-white/10 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white" placeholder="+1 ..." />
+          <input type="tel" value={editPhone} onChange={e=>setEditPhone(e.target.value)} className="w-full mt-1 bg-slate-100/90 dark:bg-white/5 backdrop-blur-md px-4 py-3 rounded-xl border border-slate-200 dark:border-transparent outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white transition-all shadow-inner" placeholder="+1 ..." />
         </div>
         <div>
           <label className="text-[13px] font-semibold text-slate-500 ml-1">Email</label>
@@ -219,13 +219,13 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
         <div>
           <label className="text-[13px] font-semibold text-slate-500 mb-2 block ml-1">Color Theme</label>
           <div className="grid grid-cols-3 gap-2">
-            <button onClick={() => setTheme('light')} className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 transition-all ${theme === 'light' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'border-transparent bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
+            <button onClick={() => setTheme('light')} className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 transition-all ${theme === 'light' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'border-slate-200 dark:border-transparent bg-slate-50/95 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
               <Sun className="w-6 h-6" /><span className="text-sm font-medium">Light</span>
             </button>
-            <button onClick={() => setTheme('dark')} className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 transition-all ${theme === 'dark' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'border-transparent bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
+            <button onClick={() => setTheme('dark')} className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 transition-all ${theme === 'dark' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'border-slate-200 dark:border-transparent bg-slate-50/95 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
               <Moon className="w-6 h-6" /><span className="text-sm font-medium">Dark</span>
             </button>
-            <button onClick={() => setTheme('auto')} className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 transition-all ${theme === 'auto' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'border-transparent bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
+            <button onClick={() => setTheme('auto')} className={`py-4 flex flex-col items-center gap-2 rounded-xl border-2 transition-all ${theme === 'auto' ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'border-slate-200 dark:border-transparent bg-slate-50/95 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
               <Monitor className="w-6 h-6" /><span className="text-sm font-medium">System</span>
             </button>
           </div>
@@ -233,9 +233,9 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
         
         <div>
            <label className="text-[13px] font-semibold text-slate-500 mb-2 block ml-1">Text Size</label>
-           <div className="flex bg-white/40 dark:bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/40 dark:border-white/10">
+           <div className="flex glass-protective-panel p-1 rounded-xl">
              {['small', 'medium', 'large'].map(s => (
-               <button key={s} onClick={() => setFontSize(s as any)} className={`flex-1 py-2 text-sm capitalize font-medium rounded-lg transition-colors ${fontSize === s ? 'bg-white shadow-sm text-slate-900 dark:bg-white/10 dark:text-white dark:shadow-none' : 'text-slate-500 dark:text-slate-400'}`}>
+               <button key={s} onClick={() => setFontSize(s as any)} className={`flex-1 py-1.5 text-sm capitalize font-medium rounded-lg transition-colors ${fontSize === s ? 'glass-droplet shadow-md text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-350'}`}>
                  {s}
                </button>
              ))}
@@ -244,11 +244,11 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
 
         <div>
            <label className="text-[13px] font-semibold text-slate-500 mb-2 block ml-1">Message Corners</label>
-           <div className="flex bg-white/40 dark:bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/40 dark:border-white/10">
-             <button onClick={() => setBubbleStyle('rounded')} className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${bubbleStyle === 'rounded' ? 'bg-white shadow-sm text-slate-900 dark:bg-white/10 dark:text-white dark:shadow-none' : 'text-slate-500 dark:text-slate-400'}`}>
+           <div className="flex glass-protective-panel p-1 rounded-xl">
+             <button onClick={() => setBubbleStyle('rounded')} className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-colors ${bubbleStyle === 'rounded' ? 'glass-droplet shadow-md text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-350'}`}>
                Rounded
              </button>
-             <button onClick={() => setBubbleStyle('square')} className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${bubbleStyle === 'square' ? 'bg-white shadow-sm text-slate-900 dark:bg-white/10 dark:text-white dark:shadow-none' : 'text-slate-500 dark:text-slate-400'}`}>
+             <button onClick={() => setBubbleStyle('square')} className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-colors ${bubbleStyle === 'square' ? 'glass-droplet shadow-md text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-350'}`}>
                Square
              </button>
            </div>
@@ -256,7 +256,7 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
 
         <div>
            <label className="text-[13px] font-semibold text-slate-500 mb-2 block ml-1">Chat Wallpaper URL</label>
-           <div className="flex bg-white/40 dark:bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/40 dark:border-white/10">
+           <div className="flex bg-[#fbfcfd]/90 dark:bg-white/5 backdrop-blur-md p-1 rounded-xl border border-slate-200 dark:border-white/10">
               <input type="url" value={chatWallpaper} onChange={e=>setChatWallpaper(e.target.value)} className="w-full bg-transparent px-3 py-2 outline-none text-slate-900 dark:text-white text-[14px]" placeholder="https://example.com/bg.jpg" />
            </div>
         </div>
@@ -274,9 +274,9 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
           { label: 'Who can message me', value: whoCanMessage, set: setWhoCanMessage, opts: ['everyone', 'contacts'] },
           { label: 'Who can call me', value: whoCanCall, set: setWhoCanCall, opts: ['everyone', 'contacts', 'nobody'] }
         ].map((item, idx) => (
-          <div key={idx} className="bg-white/40 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/40 dark:border-white/10">
+          <div key={idx} className="bg-[#fbfcfd]/90 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-slate-200 dark:border-white/10">
             <label className="text-[14px] font-semibold text-slate-900 dark:text-white mb-3 block">{item.label}</label>
-            <div className="flex gap-2 bg-white/40 dark:bg-white/5 backdrop-blur-md p-1 rounded-lg">
+            <div className="flex gap-2 bg-slate-100/90 dark:bg-white/5 backdrop-blur-md p-1 rounded-lg">
                {item.opts.map(opt => (
                  <button key={opt} onClick={() => item.set(opt)} className={`flex-1 py-1.5 text-[13px] capitalize font-medium rounded-md transition-colors ${item.value === opt ? 'bg-white shadow-sm text-slate-900 dark:bg-white/10 dark:text-white dark:shadow-none' : 'text-slate-500 dark:text-slate-400'}`}>
                    {opt}
@@ -286,7 +286,7 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
           </div>
         ))}
         
-        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/40 dark:border-white/10 flex items-center justify-between cursor-pointer" onClick={() => setReadReceipts(!readReceipts)}>
+        <div className="bg-[#fbfcfd]/90 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-between cursor-pointer" onClick={() => setReadReceipts(!readReceipts)}>
            <div>
              <div className="text-[14px] font-semibold text-slate-900 dark:text-white">Read Receipts</div>
              <div className="text-[12px] text-slate-500 mt-0.5">Show others when you've read their messages</div>
@@ -305,7 +305,7 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
       <div className="space-y-4">
         <label className="text-[13px] font-semibold text-slate-500 block ml-1 mb-2">General</label>
         
-        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/40 dark:border-white/10 flex items-center justify-between cursor-pointer" onClick={() => setHapticsEnabled(!hapticsEnabled)}>
+        <div className="bg-[#fbfcfd]/90 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-between cursor-pointer" onClick={() => setHapticsEnabled(!hapticsEnabled)}>
            <div>
              <div className="text-[14px] font-semibold text-slate-900 dark:text-white">Haptic Feedback</div>
              <div className="text-[12px] text-slate-500 mt-0.5">Vibrate on message actions</div>
@@ -315,7 +315,7 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
            </div>
         </div>
 
-        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/40 dark:border-white/10 flex items-center justify-between cursor-pointer" onClick={() => setAutoDownloadMedia(!autoDownloadMedia)}>
+        <div className="bg-[#fbfcfd]/90 dark:bg-white/5 backdrop-blur-md p-4 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-between cursor-pointer" onClick={() => setAutoDownloadMedia(!autoDownloadMedia)}>
            <div>
              <div className="text-[14px] font-semibold text-slate-900 dark:text-white">Auto-Download Media</div>
              <div className="text-[12px] text-slate-500 mt-0.5">Automatically download photos and media</div>
@@ -327,7 +327,7 @@ export function SettingsView({ profile, initialPhoto, onClose }: Props) {
 
         <div>
            <label className="text-[13px] font-semibold text-slate-500 mb-2 mt-4 block ml-1">App Language</label>
-           <div className="bg-white/40 dark:bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/40 dark:border-white/10">
+           <div className="bg-[#fbfcfd]/90 dark:bg-white/5 backdrop-blur-md p-1 rounded-xl border border-slate-200 dark:border-white/10">
               <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full bg-transparent px-3 py-3 outline-none text-[15px] font-medium text-slate-900 dark:text-white cursor-pointer">
                 <option value="en">English (US)</option>
                 <option value="es">Español</option>

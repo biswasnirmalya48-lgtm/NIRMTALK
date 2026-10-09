@@ -140,7 +140,7 @@ service cloud.firestore {
            (existing().senderId == request.auth.uid) || (incoming().diff(existing()).affectedKeys().hasOnly(['reactions']))
         );
         
-      allow delete: if isSignedIn() && existing().senderId == request.auth.uid && isChatMember(chatId);
+      allow delete: if isSignedIn() && (isChatMember(chatId) || !exists(/databases/$(database)/documents/chats/$(chatId)));
     }
   }
 }

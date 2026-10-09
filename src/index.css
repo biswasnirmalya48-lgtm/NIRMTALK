@@ -6,6 +6,94 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  /* Centralized Design Tokens (Vision 2026 Spec) */
+  --spacing-xs: 4px;
+  --spacing-sm: 12px;
+  --spacing-md: 20px;
+  --spacing-lg: 28px;
+  --spacing-xl: 36px;
+  --spacing-xxl: 52px;
+
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  
+  --shadow-depth-1: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-depth-2: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-depth-3: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-depth-4: 0 24px 64px rgba(0, 0, 0, 0.18);
+}
+
+/* Material Engine Utility Classes (Phase 3 Spec) */
+@utility material-a {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.35);
+}
+.dark .material-a {
+  background: rgba(10, 10, 12, 0.14);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
+}
+
+@utility material-b {
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(40px) saturate(190%);
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  box-shadow: 
+    0 4px 18px -5px rgba(0, 0, 0, 0.02),
+    inset 0 1.5px 3px rgba(255, 255, 255, 0.72);
+}
+.dark .material-b {
+  background: rgba(10, 10, 12, 0.25);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.04);
+}
+
+@utility material-c {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(50px) saturate(210%);
+  -webkit-backdrop-filter: blur(50px) saturate(210%);
+  border: 1.2px solid rgba(255, 255, 255, 0.52);
+  box-shadow: 
+    0 16px 38px -10px rgba(0, 0, 0, 0.035),
+    inset 0 2px 3px rgba(255, 255, 255, 0.78);
+}
+.dark .material-c {
+  background: rgba(10, 10, 12, 0.4);
+  backdrop-filter: blur(50px) saturate(160%);
+  -webkit-backdrop-filter: blur(50px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 
+    0 16px 38px -10px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.07);
+}
+
+@utility material-d {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(60px) saturate(220%);
+  -webkit-backdrop-filter: blur(60px) saturate(220%);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 
+    0 24px 64px -12px rgba(0, 0, 0, 0.08),
+    inset 0 2.5px 5px rgba(255, 255, 255, 0.9);
+}
+.dark .material-d {
+  background: rgba(14, 14, 16, 0.55);
+  backdrop-filter: blur(60px) saturate(170%);
+  -webkit-backdrop-filter: blur(60px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 24px 64px -12px rgba(0, 0, 0, 0.4),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.08);
 }
 
 ::selection {
@@ -16,4 +104,164 @@
 ::-moz-selection {
   background-color: theme('colors.blue.500');
   color: white;
+}
+
+/* Apple-level premium Liquid Glass System styles */
+@utility liquid-glass-panel {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(40px) saturate(190%);
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 4px 20px -5px rgba(0, 0, 0, 0.02),
+    inset 0 1.5px 3px rgba(255, 255, 255, 0.7);
+}
+
+.dark .liquid-glass-panel {
+  background: rgba(10, 10, 12, 0.25);
+  backdrop-filter: blur(45px) saturate(150%);
+  -webkit-backdrop-filter: blur(45px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+@utility glass-droplet {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(40px) saturate(210%);
+  -webkit-backdrop-filter: blur(40px) saturate(210%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 9999px;
+  box-shadow: 
+    0 12px 32px -8px rgba(0, 0, 0, 0.04),
+    0 4px 12px -2px rgba(0, 0, 0, 0.01),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    inset 0 -1.5px 2.5px rgba(0, 0, 0, 0.02);
+}
+
+.dark .glass-droplet {
+  background: rgba(10, 10, 12, 0.2);
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  box-shadow: 
+    0 16px 40px -10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+/* Glass panel with strong border contrast protection for Day & Night Theme */
+@utility glass-protective-panel {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(35px) saturate(190%);
+  -webkit-backdrop-filter: blur(35px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 
+    0 12px 36px rgba(0, 0, 0, 0.03),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
+}
+
+.dark .glass-protective-panel {
+  background: rgba(14, 14, 16, 0.45);
+  backdrop-filter: blur(35px) saturate(150%);
+  -webkit-backdrop-filter: blur(35px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.06);
+}
+
+/* Accessibility dynamic shadow for text overlay clarity */
+.heavy-text-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* VisionOS & macOS Inspired Glass Refraction & Elastic Transition utilities */
+.apple-spring {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.12);
+}
+
+.apple-fluid {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Button & Card physics transitions (hover lift, click compress, spring release) */
+.apple-interactive {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, opacity 0.2s ease, filter 0.3s ease;
+}
+.apple-interactive:hover {
+  transform: translateY(-1.5px) scale(1.015);
+}
+.apple-interactive:active {
+  transform: translateY(0.5px) scale(0.97);
+}
+
+/* Standard button interactions without scale */
+.apple-interactive-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, background-color 0.2s ease;
+}
+.apple-interactive-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+.apple-interactive-btn:active {
+  transform: translateY(0.5px) scale(0.96);
+}
+
+/* Glowing, breathing details for active AI responses */
+.ai-breath-indicator {
+  animation: ai-glow-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes ai-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.35));
+    opacity: 0.85;
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.7));
+    opacity: 1;
+  }
+}
+
+/* Shimmer load states representing highly premium placeholders */
+.premium-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%);
+  background-size: 200% 100%;
+  animation: placeholder-shimmer 1.8s infinite linear;
+}
+
+.dark .premium-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.01) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.01) 75%);
+  background-size: 200% 100%;
+  animation: placeholder-shimmer 1.8s infinite linear;
+}
+
+@keyframes placeholder-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Atmospheric Ambient Twirl Glow */
+.atmospheric-aura {
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+}
+
+/* Glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.28), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.dark .glow-blue {
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Custom scrollbars */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

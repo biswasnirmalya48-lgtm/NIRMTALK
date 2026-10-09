@@ -1,6 +1,6 @@
 {
-  "name": "Global Chat",
-  "description": "A minimal, fast global chat application like Telegram with real-time messages and online indicators.",
+  "name": "NirmTalk X",
+  "description": "NirmTalk X - Next-generation communication platform featuring AI Conversation Brain, catch-up engine, knowledge graph, decision tracker, secure view-once media, collaborative whiteboard, and real-time messaging.",
   "requestFramePermissions": [
     "microphone",
     "camera"

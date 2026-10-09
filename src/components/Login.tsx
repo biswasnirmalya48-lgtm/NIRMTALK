@@ -2,18 +2,21 @@ import React from 'react';
 import { loginWithGoogle } from '../firebase';
 import { MessageSquare, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
+import { DynamicScenery } from './DynamicScenery';
 
 export default function Login() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#000000] flex items-center justify-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen w-full bg-transparent flex items-center justify-center p-4 relative overflow-hidden font-sans">
+      <DynamicScenery />
+      
       {/* Background radial glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 dark:bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
 
       <motion.div 
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 24, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-sm flex flex-col items-center bg-white dark:bg-[#111113] border border-slate-200 dark:border-white/10 p-8 sm:p-10 rounded-[32px] shadow-xl relative z-10"
+        className="w-[88%] sm:w-[380px] min-w-[270px] max-w-sm flex flex-col items-center bg-white/85 dark:bg-[#111113]/80 backdrop-blur-[40px] border border-slate-200/50 dark:border-white/10 p-8 sm:p-10 rounded-[32px] shadow-2xl relative z-10"
       >
         {/* App Icon */}
         <motion.div 

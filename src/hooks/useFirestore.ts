@@ -14,6 +14,31 @@ export function useProfiles() {
       snap.forEach(d => {
         data[d.id] = d.data() as UserProfile;
       });
+      
+      // Inject NIRM AI (bot) profile so it is always present
+      if (!data['nirm-ai']) {
+        data['nirm-ai'] = {
+          userId: 'nirm-ai',
+          displayName: 'NIRM AI ⚡',
+          email: 'nirm-ai@nirmtalk.local',
+          photoURL: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+          status: 'online',
+          lastSeen: { toDate: () => new Date() } as any,
+          isBot: true,
+          username: 'nirmaireply',
+          settings: {
+            privacy: {
+              whoCanMessage: 'everyone',
+              whoCanCall: 'nobody',
+              profilePhoto: 'everyone',
+              lastSeen: 'everyone'
+            }
+          }
+        };
+      } else {
+        data['nirm-ai'].isBot = true;
+      }
+      
       setProfiles(data);
     }, (error) => handleFirestoreError(error, OperationType.LIST, 'users', auth));
     
@@ -132,8 +157,17 @@ export async function createGroupChat(name: string, members: string[]) {
   }
 }
 
-export async function sendMessage(chatId: string, text: string, type: 'direct' | 'group', chatName?: string, replyTo?: Message['replyTo'], attachment?: Message['attachment']) {
-  if (!auth.currentUser) return;
+export async function sendMessage(
+  chatId: string, 
+  text: string, 
+  type: 'direct' | 'group', 
+  chatName?: string, 
+  replyTo?: Message['replyTo'], 
+  attachment?: Message['attachment'],
+  customSenderId?: string
+) {
+  const senderId = customSenderId || (auth.currentUser ? auth.currentUser.uid : null);
+  if (!senderId) return;
   const textClean = text.trim();
   if(!textClean && !attachment) return;
   
@@ -142,7 +176,7 @@ export async function sendMessage(chatId: string, text: string, type: 'direct' |
     const snap = await getDoc(chatRef);
     
     // Check if other user blocked the current user in direct chats
-    if (snap.exists() && type === 'direct') {
+    if (snap.exists() && type === 'direct' && !customSenderId && auth.currentUser) {
        const chatData = snap.data() as Chat;
        const otherUserId = chatData.members.find(m => m !== auth.currentUser?.uid);
        if (otherUserId) {
@@ -155,7 +189,7 @@ export async function sendMessage(chatId: string, text: string, type: 'direct' |
 
     const msgRef = doc(collection(db, `chats/${chatId}/messages`));
     const payload: any = {
-      senderId: auth.currentUser.uid,
+      senderId: senderId,
       text: textClean,
       createdAt: serverTimestamp()
     };
@@ -171,7 +205,7 @@ export async function sendMessage(chatId: string, text: string, type: 'direct' |
     const updatePayload: any = { 
       updatedAt: serverTimestamp(), 
       lastMessage: lastMsgText.substring(0, 50),
-      lastMessageSenderId: auth.currentUser.uid 
+      lastMessageSenderId: senderId 
     };
 
     if (snap.exists()) {
@@ -188,6 +222,7 @@ export async function sendMessage(chatId: string, text: string, type: 'direct' |
       updatePayload.name = chatName;
     }
     await updateDoc(chatRef, updatePayload);
+    return msgRef.id;
   } catch (error) {
     handleFirestoreError(error, OperationType.CREATE, `chats/${chatId}/messages`, auth);
   }
@@ -299,6 +334,19 @@ export async function setChatTypingStatus(chatId: string, isTyping: boolean) {
   } catch(e) { }
 }
 
+export async function setBotTypingStatus(chatId: string, botId: string, isTyping: boolean) {
+  try {
+    const chatRef = doc(db, 'chats', chatId);
+    const typingUpdate: any = {};
+    if (isTyping) {
+      typingUpdate[`typing.${botId}`] = Date.now();
+    } else {
+      typingUpdate[`typing.${botId}`] = deleteField();
+    }
+    await updateDoc(chatRef, typingUpdate);
+  } catch(e) { }
+}
+
 export async function togglePinMessage(chatId: string, message: Message | null, senderName?: string) {
   if (!auth.currentUser) return;
   try {
@@ -376,10 +424,24 @@ export async function clearChatHistory(chatId: string) {
 
 export async function deleteChat(chatId: string) {
   if (!auth.currentUser) return;
+  console.log(`[DELETE_PROCESS] Selected Chat ID: "${chatId}"`);
+  console.log(`[DELETE_PROCESS] Delete function execution started for chatId: "${chatId}"`);
   try {
     const chatRef = doc(db, 'chats', chatId);
-    await deleteDoc(chatRef);
-  } catch(e) {
+    const messagesRef = collection(db, `chats/${chatId}/messages`);
+    const q = query(messagesRef);
+    const snap = await getDocs(q);
+    
+    console.log(`[DELETE_PROCESS] Found ${snap.docs.length} messages to delete in chat "${chatId}".`);
+    const batch = writeBatch(db);
+    snap.docs.forEach((d) => {
+      batch.delete(d.ref);
+    });
+    batch.delete(chatRef);
+    await batch.commit();
+    console.log(`[DELETE_PROCESS] Storage/database delete result: SUCCESS for chatId: "${chatId}"`);
+  } catch(e: any) {
+    console.error(`[DELETE_PROCESS] Storage/database delete result: FAILED for chatId: "${chatId}". Error: ${e.message || e}`);
     handleFirestoreError(e, OperationType.DELETE, `chats/${chatId}`, auth);
   }
 }

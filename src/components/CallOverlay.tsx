@@ -99,87 +99,124 @@ export function CallOverlay({ profiles }: { profiles: Record<string, UserProfile
     return (
       <AnimatePresence>
         <motion.div 
-          initial={{ opacity: 0, y: -80, scale: 0.9 }}
+          initial={{ opacity: 0, y: -100, scale: 0.92 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -50, scale: 0.95 }}
-          className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-sm overflow-hidden rounded-[32px] border border-white/25 dark:border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.3)]"
+          exit={{ opacity: 0, y: -60, scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 280, damping: 22 }}
+          className="fixed top-6 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-[999999] overflow-hidden rounded-[40px] border border-white/35 dark:border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.5),inset_0_1px_3px_rgba(255,255,255,0.4)]"
+          style={{ contentVisibility: 'auto' }}
         >
-          {/* Liquid backing blob in the capsule */}
-          <div className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-3xl" />
+          {/* Glass & Liquid Backing Layer */}
+          <div className="absolute inset-0 bg-[#0c0f17]/95 dark:bg-black/98 backdrop-blur-[40px]" />
+          
+          {/* Floating colorful atmospheric liquid lenses */}
           <motion.div 
             animate={{ 
-              x: [-10, 10, -10], 
-              y: [-5, 5, -5],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute -top-12 -left-12 w-28 h-28 rounded-full bg-cyan-500/20 blur-xl pointer-events-none" 
-          />
-          <motion.div 
-            animate={{ 
-              x: [10, -10, 10], 
-              y: [5, -5, 5],
-              scale: [1, 1.15, 1],
+              x: [-15, 15, -15], 
+              y: [-8, 8, -8],
+              scale: [1, 1.2, 1],
             }}
             transition={{
               duration: 5,
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="absolute -bottom-12 -right-12 w-28 h-28 rounded-full bg-rose-500/20 blur-xl pointer-events-none" 
+            className="absolute -top-16 -left-16 w-36 h-36 rounded-full bg-emerald-500/15 blur-2xl pointer-events-none" 
+          />
+          <motion.div 
+            animate={{ 
+              x: [15, -15, 15], 
+              y: [8, -8, 8],
+              scale: [1, 1.25, 1],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute -bottom-16 -right-16 w-36 h-36 rounded-full bg-cyan-500/15 blur-2xl pointer-events-none" 
           />
 
-          {/* Frosted Glass content */}
-          <div className="relative z-10 p-5 flex items-center gap-4">
-            <div className="relative">
-              <img 
-                src={otherUserProfile?.photoURL || 'https://www.gravatar.com/avatar/?d=mp'} 
-                alt="Caller" 
-                className="w-14 h-14 rounded-full object-cover shadow-lg border border-white/20" 
-              />
-              <span className="absolute bottom-0 right-0 flex h-4 w-4">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-cyan-500"></span>
-              </span>
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <h3 className="text-base font-bold text-slate-100 truncate">
-                {incomingCall.isGroup 
-                  ? `${otherUserProfile?.displayName || 'Someone'}'s Group`
-                  : (otherUserProfile?.displayName || 'Incoming caller')}
-              </h3>
-              <p className="text-xs text-white/75 font-medium flex items-center gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
-                <span className="relative flex h-2 w-2 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          {/* Premium Glass Top Reflections */}
+          <div className="absolute top-0.5 inset-x-8 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-85 pointer-events-none blur-[0.2px]" />
+          <div className="absolute top-1 left-8 w-1.5 h-1.5 bg-white/60 rounded-full blur-[0.1px] pointer-events-none" />
+
+          {/* Incoming Call Content Grid */}
+          <div className="relative z-10 p-6 flex flex-row items-center justify-between gap-4 font-sans text-white">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="relative flex-shrink-0">
+                <img 
+                  src={otherUserProfile?.photoURL || 'https://www.gravatar.com/avatar/?d=mp'} 
+                  alt="Caller" 
+                  className="w-16 h-16 rounded-full object-cover shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-white/30" 
+                />
+                <span className="absolute bottom-0.5 right-0.5 flex h-4.5 w-4.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-90"></span>
+                  <span className="relative inline-flex rounded-full h-4.5 w-4.5 bg-cyan-500 border border-white dark:border-[#121318]"></span>
                 </span>
-                {incomingCall.isGroup 
-                  ? `Incoming Group ${incomingCall.type} call...`
-                  : `Incoming ${incomingCall.type} call...`}
-              </p>
+              </div>
+              
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-black text-slate-50 truncate leading-snug tracking-tight">
+                  {incomingCall.isGroup 
+                    ? `${otherUserProfile?.displayName || 'Someone'}'s Group`
+                    : (otherUserProfile?.displayName || 'Incoming caller')}
+                </h3>
+                <p className="text-xs text-slate-300 font-semibold flex items-center gap-1.5 mt-1 leading-none">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-80 animate-duration-1000"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="tracking-wide">
+                    {incomingCall.isGroup 
+                      ? `Incoming Group ${incomingCall.type} call...`
+                      : `Incoming ${incomingCall.type} call...`}
+                  </span>
+                </p>
+              </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            {/* Highly clickable large action buttons */}
+            <div className="flex items-center gap-4 flex-shrink-0">
+              {/* Accept Call Button with concentric liquid ripples */}
+              <div className="relative">
+                {/* Outward ripple 1 */}
+                <motion.div 
+                  animate={{ scale: [1, 1.8], opacity: [0.55, 0] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+                  className="absolute inset-0 rounded-full bg-emerald-500/45 pointer-events-none z-0"
+                />
+                {/* Outward ripple 2 */}
+                <motion.div 
+                  animate={{ scale: [1, 2.3], opacity: [0.35, 0] }}
+                  transition={{ duration: 1.8, delay: 0.6, repeat: Infinity, ease: "easeOut" }}
+                  className="absolute inset-0 rounded-full bg-emerald-400/35 pointer-events-none z-0"
+                />
+                
+                <motion.button 
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.88 }}
+                  onClick={() => {
+                    try { if (navigator.vibrate) navigator.vibrate([20, 60, 20]); } catch(e){}
+                    acceptCall();
+                  }} 
+                  className="relative z-10 w-15 h-15 md:w-16 md:h-16 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-white shadow-[0_10px_24px_rgba(16,185,129,0.45)] border border-emerald-400/40 select-none cursor-pointer transition-colors duration-200"
+                >
+                  <Phone className="w-6 h-6 fill-current animate-[pulse_1.2s_infinite]" />
+                </motion.button>
+              </div>
+
+              {/* Decline Button */}
               <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={acceptCall} 
-                className="w-12 h-12 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 border border-emerald-400/30 transition-shadow"
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.88 }}
+                onClick={() => {
+                  try { if (navigator.vibrate) navigator.vibrate(40); } catch(e){}
+                  rejectCall();
+                }} 
+                className="w-15 h-15 md:w-16 md:h-16 rounded-full bg-rose-500 hover:bg-rose-400 flex items-center justify-center text-white shadow-[0_10px_24px_rgba(244,63,94,0.45)] border border-rose-400/40 select-none cursor-pointer transition-colors duration-200"
               >
-                <Phone className="w-5 h-5 fill-current animate-pulse" />
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={rejectCall} 
-                className="w-12 h-12 rounded-full bg-rose-500 hover:bg-rose-400 flex items-center justify-center text-white shadow-lg shadow-rose-500/30 border border-rose-400/30 transition-shadow"
-              >
-                <PhoneOff className="w-5 h-5" />
+                <PhoneOff className="w-6 h-6" />
               </motion.button>
             </div>
           </div>
@@ -197,7 +234,7 @@ export function CallOverlay({ profiles }: { profiles: Record<string, UserProfile
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-[#0c0d0f] overflow-hidden flex flex-col"
+          className="fixed inset-0 z-[99998] bg-[#0c0d0f] overflow-hidden flex flex-col"
         >
           {/* 1. DYNAMIC WATER-GLASS BACKGROUND BLOBS */}
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">

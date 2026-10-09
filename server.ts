@@ -13,6 +13,62 @@ const ai = new GoogleGenAI({
   }
 });
 
+const PRIMARY_MODEL = "gemini-2.5-flash";
+const FALLBACK_MODELS = [
+  "gemini-flash-latest",
+  "gemini-3.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3.1-pro-preview"
+];
+
+async function generateContentWithFallback(options: {
+  contents: any;
+  config?: any;
+}) {
+  const modelsToTry = [PRIMARY_MODEL, ...FALLBACK_MODELS];
+  let lastError: any = null;
+
+  for (const modelName of modelsToTry) {
+    try {
+      console.log(`[Gemini] Attempting content generation with model: ${modelName}`);
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: options.contents,
+        config: options.config,
+      });
+      return response;
+    } catch (err: any) {
+      console.warn(`[Gemini] Model ${modelName} failed:`, err.message || err);
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
+async function generateContentStreamWithFallback(options: {
+  contents: any;
+  config?: any;
+}) {
+  const modelsToTry = [PRIMARY_MODEL, ...FALLBACK_MODELS];
+  let lastError: any = null;
+
+  for (const modelName of modelsToTry) {
+    try {
+      console.log(`[Gemini] Attempting stream generation with model: ${modelName}`);
+      const responseStream = await ai.models.generateContentStream({
+        model: modelName,
+        contents: options.contents,
+        config: options.config,
+      });
+      return responseStream;
+    } catch (err: any) {
+      console.warn(`[Gemini] Stream Model ${modelName} failed:`, err.message || err);
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -26,9 +82,11 @@ async function startServer() {
 
   const handleAiError = (e: any, res: express.Response) => {
     console.error(e);
-    let errorMessage = e.message;
+    let errorMessage = e.message || "An error occurred with the AI service.";
     if (e.status === 429 || (e.message && e.message.includes('429')) || (e.message && e.message.includes('quota'))) {
       errorMessage = "AI quota exceeded. Please wait a minute before trying again.";
+    } else if (e.status === 503 || (e.message && e.message.includes('503')) || (e.message && e.message.includes('UNAVAILABLE')) || (e.message && e.message.includes('demand'))) {
+      errorMessage = "AI is currently experiencing high demand. Please try again soon.";
     }
     res.status(500).json({ success: false, error: errorMessage });
   };
@@ -46,8 +104,7 @@ async function startServer() {
       }
       contents.push({ role: 'user', parts: [{ text: prompt }] });
       
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+      const response = await generateContentWithFallback({
         contents: contents,
         config: {
           systemInstruction: "You are NIRM AI, an angry, easily annoyed AI assistant. Be brief and sarcastic.",
@@ -64,8 +121,7 @@ async function startServer() {
     try {
       const { text, targetLanguage } = req.body;
       
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+      const response = await generateContentWithFallback({
         contents: `Translate the following text to ${targetLanguage || 'English'}:\n\n${text}`,
       });
       res.json({ success: true, text: response.text });
@@ -78,8 +134,7 @@ async function startServer() {
   app.post("/api/chat", async (req, res) => {
     try {
       const { prompt } = req.body;
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+      const response = await generateContentWithFallback({
         contents: prompt,
       });
       res.json({ success: true, text: response.text });
@@ -88,12 +143,116 @@ async function startServer() {
     }
   });
 
+  // AI Tone Shaper & Writing Tools endpoint
+  app.post("/api/rewrite-text", async (req, res) => {
+    try {
+      const { text, tone } = req.body;
+      if (!text || !tone) {
+        return res.status(400).json({ success: false, error: "Text and tone are required." });
+      }
+
+      let instruction = "";
+      if (tone === "professional") {
+        instruction = "Rewrite the following draft text to be polite, clear, structured, and professional. Keep the core meaning exactly the same.";
+      } else if (tone === "sarcastic") {
+        instruction = "Rewrite the following draft text to be super sarcastic, sassy, slightly easily annoyed, and funny, matching our dramatic and playful Nirm AI chatbot persona. Keep it relatively short and sharp.";
+      } else if (tone === "concise") {
+        instruction = "Rewrite the following draft text to be extremely concise and to-the-point, removing any fluff or extra words. Keep the core message intact.";
+      } else if (tone === "elaborate") {
+        instruction = "Rewrite the following draft text to expand into a beautiful, detailed, and polite message, while maintaining the original meaning.";
+      } else if (tone === "excited") {
+        instruction = "Rewrite the following draft text to sound highly excited, enthusiastic, supportive, and full of positive energy with some exclamation points!";
+      } else {
+        instruction = "Rewrite the following draft text to be clean, natural, and friendly.";
+      }
+
+      const prompt = `${instruction}\n\nDraft Text:\n"${text}"\n\nOnly return the rewritten text, with no preamble, introduction, or quotes around it.`;
+
+      const response = await generateContentWithFallback({
+        contents: prompt,
+      });
+      res.json({ success: true, text: response.text });
+    } catch (e: any) {
+      handleAiError(e, res);
+    }
+  });
+
+  // AI Smart Suggest Quick Replies
+  app.post("/api/suggest-replies", async (req, res) => {
+    try {
+      const { lastMessageText } = req.body;
+      if (!lastMessageText) {
+        return res.status(400).json({ success: false, suggestions: [] });
+      }
+      const prompt = `Analyze this last message received in a casual chat:\n"${lastMessageText}"\n\nGenerate 3 different, natural, and helpful short replies (max 4-5 words each) appropriate for this context. For example, if they asked a question, provide a yes, a no, and an alternative. If they shared a story, provide a reaction. \n\nOnly respond with a raw JSON array of strings containing the 3 sentences. No wrapping in markdown code block, no preamble, and no quotes. Let it be a valid JSON parsed array, like ["Sure!", "No, sorry", "Let's check tomorrow"].`;
+      
+      const response = await generateContentWithFallback({
+        contents: prompt,
+      });
+      let resultText = response.text || "[]";
+      resultText = resultText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json({ success: true, suggestions: JSON.parse(resultText) });
+    } catch (e: any) {
+      res.json({ success: false, suggestions: ["Sounds good!", "Sure thing", "I'll let you know"] });
+    }
+  });
+
+  // AI Conversation Semantic Search
+  app.post("/api/semantic-search", async (req, res) => {
+    try {
+      const { messages, query } = req.body;
+      const prompt = `You are a conversation intelligence search engine. Below is a JSON representation of recent chat messages. Find the messages that match the following semantic query: "${query}"\n\nMessages:\n${JSON.stringify(messages)}\n\nPlease analyze their meaning and context, not just simple keywords. Return the matching message IDs as a JSON array of strings: ["id1", "id2", ...]. Only output the raw JSON array. Do not include markdown code block formatting or explanation.`;
+      
+      const response = await generateContentWithFallback({
+        contents: prompt,
+      });
+      let resultText = response.text || "[]";
+      resultText = resultText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json({ success: true, matchedIds: JSON.parse(resultText) });
+    } catch (e: any) {
+      res.json({ success: false, matchedIds: [] });
+    }
+  });
+
+  // AI Conversation Recap / Summarize Chat
+  app.post("/api/summarize-chat", async (req, res) => {
+    try {
+      const { messages } = req.body;
+      const prompt = `You are an elite communication analyst. Produce a beautiful, thorough summary report of this chat history. Return a JSON object with three keys: "summary" (a short elegant paragraph), "decisions" (an array of decisions made, max 4), and "chapters" (an array of chapters describing the timeline of topics, max 4).\n\nMessages:\n${JSON.stringify(messages)}\n\nOnly respond with the raw JSON object. Do not wrap in markdown or write preamble.`;
+      
+      const response = await generateContentWithFallback({
+        contents: prompt,
+      });
+      let resultText = response.text || "{}";
+      resultText = resultText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json({ success: true, recap: JSON.parse(resultText) });
+    } catch (e: any) {
+      res.status(500).json({ success: false, error: e.message });
+    }
+  });
+
+  // AI Suggested Actions
+  app.post("/api/suggest-actions", async (req, res) => {
+    try {
+      const { messages } = req.body;
+      const prompt = `Below is a tiny log of recent chat messages. Suggest 3 useful immediate actions as short labels (e.g. "Create Poll about Wednesday Meetup", "Set Reminder to follow up on logo designs", "Save logo assets").\n\nMessages:\n${JSON.stringify(messages)}\n\nRespond with a raw JSON array of strings only.`;
+      
+      const response = await generateContentWithFallback({
+        contents: prompt,
+      });
+      let resultText = response.text || "[]";
+      resultText = resultText.replace(/```json/g, "").replace(/```/g, "").trim();
+      res.json({ success: true, suggestions: JSON.parse(resultText) });
+    } catch (e: any) {
+      res.json({ success: false, suggestions: [] });
+    }
+  });
+
   // AI Magic Reply stream endpoint
   app.post("/api/chat-stream", async (req, res) => {
     try {
       const { prompt } = req.body;
-      const responseStream = await ai.models.generateContentStream({
-        model: "gemini-3.5-flash",
+      const responseStream = await generateContentStreamWithFallback({
         contents: prompt,
       });
       res.setHeader('Content-Type', 'text/plain');
